@@ -1,0 +1,11 @@
+.env
+.vscode/
+shared/__pycache__/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.vscode/
+*.log
+

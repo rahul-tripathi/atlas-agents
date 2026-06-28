@@ -89,6 +89,7 @@ def run_anthropic_react(prompt: str, max_iterations: int = 5) -> str:
 
         # Collect assistant content blocks
         assistant_content = response.content
+        print("Assistant response:", assistant_content)
         messages.append({"role": "assistant", "content": assistant_content})
 
         # Check for tool use blocks

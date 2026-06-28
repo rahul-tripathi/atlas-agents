@@ -109,7 +109,7 @@ def plan_and_execute(task: str) -> str:
 # ── Main ─────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    task = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "Research the top 3 AI agent frameworks in 2025"
+    task = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "Research the top 3 AI agent frameworks in 2026"
     print(f"🔍 Atlas v0.1 (Plan-and-Execute) — {task}\n")
     answer = plan_and_execute(task)
     print(f"\n{'='*60}\nFINAL ANSWER:\n{'='*60}\n{answer}")

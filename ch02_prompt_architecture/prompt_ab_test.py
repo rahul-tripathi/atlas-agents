@@ -240,6 +240,7 @@ def run_eval_suite():
             print(f"  [{i+1}/{len(EVAL_CASES)}] {case['question'][:50]}...", end=" ")
             try:
                 result = run_single_eval(variant, case)
+                # print(f"answer={result.answer[:60]}...")
                 status = "✅" if result.has_expected_keywords or result.correctly_refused else "❌"
                 print(f"{status} ({result.latency_ms}ms, {result.tool_calls_count} tools)")
                 variant_results.append(result)

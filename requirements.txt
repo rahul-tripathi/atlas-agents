@@ -21,7 +21,7 @@ langgraph>=0.3.0
 langchain-openai>=0.3.0
 
 # Ch. 6 — Multi-Agent
-crewai>=0.80.0
+# crewai>=0.80.0
 
 # Ch. 7 — Model Portability
 dspy>=2.5.0

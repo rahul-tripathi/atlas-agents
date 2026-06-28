@@ -14,11 +14,9 @@ Usage:
 """
 
 import json
-import re
 import sys
-from urllib.request import urlopen, Request
-from urllib.parse import quote_plus
 from html.parser import HTMLParser
+from urllib.request import urlopen, Request
 
 from openai import OpenAI
 
@@ -59,28 +57,12 @@ class _HTMLTextExtractor(HTMLParser):
 def search_web(query: str) -> str:
     """Search DuckDuckGo and return top results as text."""
     try:
-        url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
-        req = Request(url, headers={"User-Agent": "Mozilla/5.0 (Atlas Agent)"})
-        with urlopen(req, timeout=10) as resp:
-            html = resp.read().decode("utf-8", errors="replace")
-
-        # Extract result snippets
-        results = []
-        for match in re.finditer(
-            r'<a rel="nofollow" class="result__a" href="([^"]+)"[^>]*>(.*?)</a>.*?'
-            r'<a class="result__snippet"[^>]*>(.*?)</a>',
-            html, re.DOTALL
-        ):
-            href, title, snippet = match.groups()
-            title = re.sub(r"<[^>]+>", "", title).strip()
-            snippet = re.sub(r"<[^>]+>", "", snippet).strip()
-            if title:
-                results.append(f"- [{title}]({href})\n  {snippet}")
-            if len(results) >= 5:
-                break
-
-        if not results:
+        from ddgs import DDGS
+        with DDGS() as ddgs:
+            hits = list(ddgs.text(query, max_results=5))
+        if not hits:
             return "No results found."
+        results = [f"- [{r['title']}]({r['href']})\n  {r['body']}" for r in hits]
         return f"Search results for '{query}':\n\n" + "\n\n".join(results)
     except Exception as e:
         return f"Search failed: {e}"
@@ -187,6 +169,7 @@ def run_atlas(question: str) -> str:
         )
 
         msg = response.choices[0].message
+        print(msg)
         messages.append(msg)
 
         # If no tool calls, we have a final answer

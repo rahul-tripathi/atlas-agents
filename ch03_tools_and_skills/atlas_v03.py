@@ -68,6 +68,7 @@ def run_atlas(question: str):
         # 2. Check for final answer
         if not msg.tool_calls:
             print("✅ Final answer received.")
+            print(f"List of messages:\n{messages}")
             return msg.content
 
         # 3. Execute tools

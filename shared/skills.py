@@ -10,11 +10,9 @@ from abc import ABC, abstractmethod
 from typing import Any
 from pathlib import Path
 import json
-import re
 import subprocess
 import tempfile
 from urllib.request import urlopen, Request
-from urllib.parse import quote_plus
 from html.parser import HTMLParser
 
 
@@ -163,24 +161,14 @@ class WebSkill(Skill):
 
     def _search(self, query: str) -> str:
         try:
-            url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
-            req = Request(url, headers={"User-Agent": "Mozilla/5.0 (Atlas Agent)"})
-            with urlopen(req, timeout=10) as resp:
-                html = resp.read().decode("utf-8", errors="replace")
-            results = []
-            for match in re.finditer(
-                r'<a rel="nofollow" class="result__a" href="([^"]+)"[^>]*>(.*?)</a>.*?'
-                r'<a class="result__snippet"[^>]*>(.*?)</a>',
-                html, re.DOTALL
-            ):
-                href, title, snippet = match.groups()
-                title = re.sub(r"<[^>]+>", "", title).strip()
-                snippet = re.sub(r"<[^>]+>", "", snippet).strip()
-                if title:
-                    results.append(f"- [{title}]({href})\n  {snippet}")
-                if len(results) >= 5:
-                    break
-            return "\n\n".join(results) if results else "No results found."
+            from ddgs import DDGS
+            with DDGS() as ddgs:
+                hits = list(ddgs.text(query, max_results=5))
+            if not hits:
+                return "No results found."
+            return "\n\n".join(
+                f"- [{r['title']}]({r['href']})\n  {r['body']}" for r in hits
+            )
         except Exception as e:
             return f"Error: Search failed — {e}"
 

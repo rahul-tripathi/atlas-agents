@@ -15,7 +15,7 @@ from pathlib import Path
 
 # Note: This requires the openai-agents package
 # pip install openai-agents
-from agents import Agent, Runner, InputGuardrail, GuardrailFunctionOutput, InputGuardrailTripwireTriggered
+from agents import Agent, Runner, InputGuardrail, GuardrailFunctionOutput, InputGuardrailTripwireTriggered, function_tool
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from shared.config import require_key
@@ -25,26 +25,32 @@ require_key("openai")
 
 # ── Tool Stubs (replace with real implementations) ──────────────────
 
+@function_tool
 def get_invoice(customer_id: str) -> str:
     """Look up a customer's invoice."""
     return f"Invoice for {customer_id}: $99.00/month, last payment 2025-03-01, status: active."
 
+@function_tool
 def process_refund(customer_id: str, amount: float, reason: str) -> str:
     """Process a refund for a customer."""
     return f"Refund of ${amount:.2f} initiated for {customer_id}. Reason: {reason}. ETA: 3-5 business days."
 
+@function_tool
 def update_payment(customer_id: str, method: str) -> str:
     """Update payment method."""
     return f"Payment method updated to {method} for {customer_id}."
 
+@function_tool
 def search_docs(query: str) -> str:
     """Search technical documentation."""
     return f"Documentation results for '{query}': Found 3 articles. Top result: 'API Authentication Guide v2.3 — Breaking Changes'."
 
+@function_tool
 def create_ticket(title: str, description: str, priority: str = "medium") -> str:
     """Create a support ticket."""
     return f"Ticket created: #{1234} — '{title}' (Priority: {priority})"
 
+@function_tool
 def check_status(ticket_id: str) -> str:
     """Check ticket status."""
     return f"Ticket #{ticket_id}: Status = In Progress, Assigned to: Engineering Team."
@@ -53,7 +59,7 @@ def check_status(ticket_id: str) -> str:
 # ── Specialist Agents ────────────────────────────────────────────────
 
 billing_agent = Agent(
-    name="Billing Specialist",
+    name="Billing_Specialist",
     instructions="""You are a billing specialist at Atlas Corp. You help customers with:
     - Invoice questions and payment history
     - Payment method updates
@@ -66,7 +72,7 @@ billing_agent = Agent(
 )
 
 technical_agent = Agent(
-    name="Technical Support",
+    name="Technical_Support",
     instructions="""You are a technical support engineer at Atlas Corp. You help with:
     - Bug reports and error troubleshooting
     - API integration issues
@@ -79,7 +85,7 @@ technical_agent = Agent(
 )
 
 general_agent = Agent(
-    name="General Support",
+    name="General_Support",
     instructions="""You are a general support agent at Atlas Corp. You handle:
     - General product inquiries
     - Account information
@@ -117,9 +123,9 @@ triage_agent = Agent(
     instructions="""You are the first point of contact for Atlas Corp support.
     Your ONLY job is to route the customer to the right specialist:
 
-    - Questions about invoices, payments, refunds, subscriptions → Billing Specialist
-    - Questions about bugs, errors, API issues, technical problems → Technical Support
-    - Everything else (general inquiries, policies) → General Support
+    - Questions about invoices, payments, refunds, subscriptions → Billing_Specialist
+    - Questions about bugs, errors, API issues, technical problems → Technical_Support
+    - Everything else (general inquiries, policies) → General_Support
 
     Do NOT try to answer questions yourself. Greet the customer briefly,
     then hand off to the appropriate specialist immediately.""",
